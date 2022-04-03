@@ -10,8 +10,6 @@ const badWordsArray = badWords.words;
 const deepgramApiKey = process.env.KEY;
 
 router.post("/response", async (req, res) => {
-  res.send("Successfully responded!");
-
   // Initializes the Deepgram SDK
   const deepgram = new Deepgram(deepgramApiKey);
 
@@ -29,13 +27,18 @@ router.post("/response", async (req, res) => {
     return false;
   }
 
+  // Getting request
   const audioStream = req.body.audioURL;
   const mimeType = req.body.mimeType;
 
+  const bufferData = Buffer.from(audioStream, "binary"); // Buffer data
+  const bufferString = bufferData.toString("hex").match(/../g).join(" ");
+
+  console.log(bufferData);
+
   deepgram.transcription
     .preRecorded(
-      { mimetype: mimeType },
-      { url: audioStream },
+      { buffer: bufferData, mimetype: mimeType },
       { punctuate: true, language: "en-GB" }
     )
     .then((transcription) => {
