@@ -9,23 +9,23 @@ const router = express.Router();
 const badWordsArray = badWords.words;
 const deepgramApiKey = process.env.KEY;
 
-router.post("/response", async (req, res) => {
-  // Initializes the Deepgram SDK
-  const deepgram = new Deepgram(deepgramApiKey);
+// Initializes the Deepgram SDK
+const deepgram = new Deepgram(deepgramApiKey);
 
-  const transcriptionArray = [];
-
-  // Function definition with passing two arrays
-  function findCommonElement(array1, array2) {
-    for (let i = 0; i < array1.length; i++) {
-      for (let j = 0; j < array2.length; j++) {
-        if (array1[i] === array2[j]) {
-          return true;
-        }
+// Function definition with passing two arrays
+function findCommonElement(array1, array2) {
+  for (let i = 0; i < array1.length; i++) {
+    for (let j = 0; j < array2.length; j++) {
+      if (array1[i] === array2[j]) {
+        return true;
       }
     }
-    return false;
   }
+  return false;
+}
+
+router.post("/response", async (req, res) => {
+  const transcriptionArray = [];
 
   // Getting request
   const audioStream = req.body.audioURL;
