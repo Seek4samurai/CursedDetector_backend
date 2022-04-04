@@ -14,6 +14,9 @@ app.use(
 );
 app.use(express.json());
 
+// Parser
+app.use(express.urlencoded({ extended: true }));
+
 // Routes
 app.use("/", controllerDG);
 
