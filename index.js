@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const fs = require("fs");
 const multer = require("multer");
 const badWords = require("./src/badwords.json");
 const { Deepgram } = require("@deepgram/sdk");
@@ -36,8 +37,6 @@ const upload = multer({ storage });
 
 // Initializes the Deepgram SDK
 const deepgram = new Deepgram(deepgramApiKey);
-const file = "";
-const mimetype = "audio/wav";
 
 // Server setup
 app.use(
@@ -51,8 +50,44 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.post("/index.html", upload.single("file"), (req, res) => {
+  const file = "./uploads/test.wav";
+  const mimetype = "audio/wav";
+
+  console.log(file);
   console.log("Done");
-  res.send("Hello");
+  const transcriptionArray = [];
+
+  if (file.startsWith("http")) {
+    source = {
+      url: file,
+    };
+  } else {
+    const audio = fs.readFileSync(file);
+    source = {
+      buffer: audio,
+      mimetype: mimetype,
+    };
+  }
+
+  deepgram.transcription
+    .preRecorded(source, {
+      punctuate: true,
+    })
+    .then((transcription) => {
+      const transcriptionObject =
+        transcription.results.channels[0].alternatives[0].words;
+      transcriptionObject.map((wordData) => {
+        transcriptionArray.push(wordData.word);
+      });
+      if (findCommonElement(transcriptionArray, badWordsArray)) {
+        res.send("Not safe!");
+      } else {
+        res.send("Safe!");
+      }
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 });
 
 const PORT = process.env.PORT || 5000;
