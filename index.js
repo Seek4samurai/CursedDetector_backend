@@ -27,7 +27,7 @@ function findCommonElement(array1, array2) {
 // Function for storing files
 const storage = multer.diskStorage({
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    cb(null, "test.wav");
   },
   destination: function (req, file, cb) {
     cb(null, "./uploads");
@@ -50,7 +50,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.post("/index.html", upload.single("file"), (req, res) => {
-  const file = "./uploads/test.wav";
+  const file = `./uploads/test.wav`;
   const mimetype = "audio/wav";
 
   console.log(file);
