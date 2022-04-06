@@ -49,11 +49,10 @@ app.use(express.json());
 // Parser
 app.use(express.urlencoded({ extended: true }));
 
-app.post("/index.html", upload.single("file"), (req, res) => {
+app.post("/response", upload.single("file"), (req, res) => {
   const file = `./uploads/test.wav`;
   const mimetype = "audio/wav";
 
-  console.log(file);
   console.log("Done");
   const transcriptionArray = [];
 
@@ -80,13 +79,13 @@ app.post("/index.html", upload.single("file"), (req, res) => {
         transcriptionArray.push(wordData.word);
       });
       if (findCommonElement(transcriptionArray, badWordsArray)) {
-        res.send("Not safe!");
+        return res.status(200).json({ message: "Not safe!" });
       } else {
-        res.send("Safe!");
+        return res.status(200).json({ message: "Safe!" });
       }
     })
     .catch((err) => {
-      res.send(err);
+      return res.status(500).json({ message: "Something went wrong!" });
     });
 });
 
