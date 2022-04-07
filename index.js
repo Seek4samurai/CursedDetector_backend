@@ -53,7 +53,6 @@ app.post("/response", upload.single("file"), (req, res) => {
   const file = `./uploads/test.wav`;
   const mimetype = "audio/wav";
 
-  console.log("Done");
   const transcriptionArray = [];
 
   if (file.startsWith("http")) {
@@ -75,9 +74,20 @@ app.post("/response", upload.single("file"), (req, res) => {
     .then((transcription) => {
       const transcriptionObject =
         transcription.results.channels[0].alternatives[0].words;
+
+      // Getting all words
       transcriptionObject.map((wordData) => {
         transcriptionArray.push(wordData.word);
       });
+
+      // Removing the file after transcripting it
+      fs.unlink(file, (err) => {
+        if (err) {
+          console.error(err);
+        }
+      });
+
+      // Checking for Bad words
       if (findCommonElement(transcriptionArray, badWordsArray)) {
         return res.status(200).json({ message: "Not safe!" });
       } else {
